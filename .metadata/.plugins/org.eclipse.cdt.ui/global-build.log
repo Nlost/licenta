@@ -1041,3 +1041,10 @@ Finished building: default.size.stdout
  
 Finished building: Dev.list
  
+21:24:40 **** Incremental Build of configuration Debug for project Dev ****
+make -j12 all 
+arm-none-eabi-size  Dev.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8624	     16	   1664	  10304	   2840	Dev.elf
+Finished building: default.size.stdout
+ 
