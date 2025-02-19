@@ -1,0 +1,22 @@
+/*              openmv_h7_diag.c 			 */
+/* This file implements all prototypes 		 */
+/* for communication with OpenMV H7 module 	 */
+/*    Date 	  |   Author  |    Description 	 */
+/* 19.02.2025 | Dan Balan | Creation of file */
+
+#include "openmv_h7_diag.h"
+
+void OpenMV_Init(void)
+{
+	return;
+}
+
+OpenMV_ReturnType OpenMV_Read(OpenMV_ML_Data *cameraData)
+{
+	return CAMERA_OK;
+}
+
+OpenMV_ReturnType OpenMV_Write(uint16_t data)
+{
+	return CAMERA_OK;
+}

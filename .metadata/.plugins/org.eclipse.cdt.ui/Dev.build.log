@@ -1,0 +1,17 @@
+21:06:32 **** Incremental Build of configuration Debug for project Dev ****
+make -j12 all 
+arm-none-eabi-gcc "../App/Src/openmv_h7_diag.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F439xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I"F:/Workspace/Licenta/Dev/App/Lib" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"App/Src/openmv_h7_diag.d" -MT"App/Src/openmv_h7_diag.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "App/Src/openmv_h7_diag.o"
+arm-none-eabi-gcc -o "Dev.elf" @"objects.list"   -mcpu=cortex-m4 -T"F:\Workspace\Licenta\Dev\STM32F439ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Dev.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Dev.elf
+ 
+arm-none-eabi-size  Dev.elf 
+arm-none-eabi-objdump -h -S Dev.elf  > "Dev.list"
+   text	   data	    bss	    dec	    hex	filename
+   8624	     16	   1664	  10304	   2840	Dev.elf
+Finished building: default.size.stdout
+ 
+Finished building: Dev.list
+ 
+
+21:06:33 Build Finished. 0 errors, 0 warnings. (took 606ms)
+

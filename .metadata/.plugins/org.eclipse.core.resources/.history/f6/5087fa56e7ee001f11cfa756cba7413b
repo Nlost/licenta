@@ -1,0 +1,37 @@
+/*              openmv_h7_diaG.h 			 */
+/* This file describes all prototypes 		 */
+/* for communication with OpenMV H7 module 	 */
+/*    Date 	  |   Author  |    Description 	 */
+/* 19.02.2025 | Dan Balan | Creation of file */
+
+
+#ifndef OPENMV_H7_H
+#define OPENMV_H7_H
+#endif
+
+#define CAMERA_NOT_INIT (uint8_t)0xFF
+#define CAMERA_INIT (uint8_t) 0xAA
+
+/* Start of OpenMV data types */
+
+enum
+{
+	CAMERA_NOT_OK,
+	CAMERA_OK
+}OpenMV_ReturnType;
+
+struct{
+	int16_t camera_x;
+	int16_t camera_y;
+	int16_t camera_h;
+	int16_t camera_w;
+}OpenMV_ML_Data;
+
+/* End of OpenMV data types */
+
+/* Start of functions prototype declaration */
+
+void OpenMV_Init();
+OpenMV_ML_Data OpenMV_Read();
+
+/* End of functions prototype declaration */
