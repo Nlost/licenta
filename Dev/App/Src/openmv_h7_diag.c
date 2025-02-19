@@ -24,7 +24,7 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 	/* Read Camera x position */
 	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_X, &spi_data, 8) == HAL_OK)
 	{
-		data.camera_x |= (uint16_t)spi_data;
+		data.camera_x = (uint16_t)spi_data;
 		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_X, &spi_data, 8) == HAL_OK)
 		{
 			data.camera_x |= (uint16_t)(spi_data<<8);
@@ -41,7 +41,7 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 	/* Read Camera y position */
 	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_Y, &spi_data, 8) == HAL_OK)
 	{
-		data.camera_y |= (uint16_t)spi_data;
+		data.camera_y = (uint16_t)spi_data;
 		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_Y, &spi_data, 8) == HAL_OK)
 		{
 			data.camera_y |= (uint16_t)(spi_data<<8);
@@ -58,7 +58,7 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 	/* Read Camera h position */
 	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_H, &spi_data, 8) == HAL_OK)
 	{
-		data.camera_h |= (uint16_t)spi_data;
+		data.camera_h = (uint16_t)spi_data;
 		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_H, &spi_data, 8) == HAL_OK)
 		{
 			data.camera_h |= (uint16_t)(spi_data<<8);
@@ -75,7 +75,7 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 	/* Read Camera w position */
 	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_W, &spi_data, 8) == HAL_OK)
 	{
-		data.camera_w |= (uint16_t)spi_data;
+		data.camera_w = (uint16_t)spi_data;
 		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_W, &spi_data, 8) == HAL_OK)
 		{
 			data.camera_w |= (uint16_t)(spi_data<<8);
