@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;Dev/App/Src/camera.c&apos; to &apos;openmv_h7_diag.c&apos;" description="Rename resource &apos;camera.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="App/Src/camera.c" name="openmv_h7_diag.c" stamp="1739983898056" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;Dev/App/Lib/camera.h&apos; to &apos;openmv_h7_diag.h&apos;" description="Rename resource &apos;camera.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="App/Lib/camera.h" name="openmv_h7_diag.h" stamp="1739983915340" updateReferences="true"/>
-</session>
