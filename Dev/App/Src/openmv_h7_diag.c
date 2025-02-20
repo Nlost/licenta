@@ -96,5 +96,12 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 
 OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint16_t data)
 {
+	//TO DO
 	return CAMERA_OK;
+}
+
+/*OpenMV_MainFunction */
+void OpenMV_MainFunction(SPI_HandleTypeDef *hspi)
+{
+	// TO DO
 }

@@ -42,5 +42,6 @@ void OpenMV_Init(void);
 void OpenMV_DeInit(void);
 OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraData);
 OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint16_t data);
+void OpenMV_MainFunction(SPI_HandleTypeDef *hspi);
 
 /* End of functions prototype declaration */
