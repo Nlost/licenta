@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "openmv_h7_diag.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -61,6 +61,10 @@ void Error_Handler(void);
 #define USER_Btn_GPIO_Port GPIOC
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
+#define SPI1_CS_OpenMV1_Pin GPIO_PIN_14
+#define SPI1_CS_OpenMV1_GPIO_Port GPIOD
+#define SPI1_CS_OpenMV2_Pin GPIO_PIN_15
+#define SPI1_CS_OpenMV2_GPIO_Port GPIOD
 #define USB_PowerSwitchOn_Pin GPIO_PIN_6
 #define USB_PowerSwitchOn_GPIO_Port GPIOG
 #define USB_OverCurrent_Pin GPIO_PIN_7

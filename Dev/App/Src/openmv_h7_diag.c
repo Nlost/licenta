@@ -19,89 +19,69 @@ void OpenMV_DeInit(void)
 OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraData)
 {
 	OpenMV_ReturnType retVal = CAMERA_OK;
-	OpenMV_ML_Data data = {0};
-	uint8_t spi_data;
-	/* Read Camera x position */
-	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_X, &spi_data, 8) == HAL_OK)
+	OpenMV_ML_Data camdata = {
+			.camera_x = 0XFFFF,
+			.camera_y = 0xFFFF,
+			.camera_h = 0XFFFF,
+			.camera_w = 0xFFFF,
+			.command = 0xFF,
+	};
+	uint8_t data[] = {0};
+	uint8_t RX_SS1[] = "A";
+	uint8_t RX_SS2[] = "Y";
+
+	if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
 	{
-		data.camera_x = (uint16_t)spi_data;
-		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_X, &spi_data, 8) == HAL_OK)
+		camdata.camera_x = (uint16_t)data[0];
+		HAL_Delay(50);
+		if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
 		{
-			data.camera_x |= (uint16_t)(spi_data<<8);
-		}
-		else
-		{
-			retVal = CAMERA_NOT_OK;
-		}
-	}
-	else
-	{
-		retVal = CAMERA_NOT_OK;
-	}
-	/* Read Camera y position */
-	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_Y, &spi_data, 8) == HAL_OK)
-	{
-		data.camera_y = (uint16_t)spi_data;
-		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_Y, &spi_data, 8) == HAL_OK)
-		{
-			data.camera_y |= (uint16_t)(spi_data<<8);
-		}
-		else
-		{
-			retVal = CAMERA_NOT_OK;
+			camdata.camera_x |=(uint16_t)(data[0]<<8);
+			HAL_Delay(100);
 		}
 	}
-	else
+	if(HAL_SPI_TransmitReceive(hspi, RX_SS2, data, 1, 1000) == HAL_OK)
 	{
-		retVal = CAMERA_NOT_OK;
-	}
-	/* Read Camera h position */
-	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_H, &spi_data, 8) == HAL_OK)
-	{
-		data.camera_h = (uint16_t)spi_data;
-		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_H, &spi_data, 8) == HAL_OK)
+		camdata.camera_y = (uint16_t)data[0];
+		HAL_Delay(20);
+		if(HAL_SPI_TransmitReceive(hspi, RX_SS2, data, 1, 1000) == HAL_OK)
 		{
-			data.camera_h |= (uint16_t)(spi_data<<8);
-		}
-		else
-		{
-			retVal = CAMERA_NOT_OK;
+			camdata.camera_y |=(uint16_t)(data[0]<<8);
+			HAL_Delay(20);
 		}
 	}
-	else
-	{
-		retVal = CAMERA_NOT_OK;
-	}
-	/* Read Camera w position */
-	if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_W, &spi_data, 8) == HAL_OK)
-	{
-		data.camera_w = (uint16_t)spi_data;
-		if(HAL_SPI_TransmitReceive_IT(hspi, CAMERA_READ_W, &spi_data, 8) == HAL_OK)
-		{
-			data.camera_w |= (uint16_t)(spi_data<<8);
-		}
-		else
-		{
-			retVal = CAMERA_NOT_OK;
-		}
-	}
-	else
-	{
-		retVal = CAMERA_NOT_OK;
-	}
-	/* Copy data to a global variable */
-	*cameraData = data;
+
+
+	*cameraData = camdata;
 	return retVal;
 }
 
-OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint16_t data)
+OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint8_t* data)
 {
-	//TO DO
-	return CAMERA_OK;
+	OpenMV_ReturnType retVal = CAMERA_OK;
+	if(HAL_SPI_Transmit(hspi, data, 1, 5000) == HAL_OK)
+	{
+		HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
+	}
+	else
+	{
+		retVal = CAMERA_NOT_OK;
+	}
+	return retVal;
 }
 
 /*OpenMV_MainFunction */
-void OpenMV_MainFunction(SPI_HandleTypeDef *hspi)
+void OpenMV_MainFunction(SPI_HandleTypeDef *hspi1, OpenMV_ML_Data *cameraData)
 {
-	// TO DO
+	OpenMV_ReturnType retVal;
+	//START OF SPI1 SLAVE1 Communication
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
+	OpenMV_Read(hspi1, cameraData);
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
+
+//	HAL_Delay(50);
+//	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
+
+//	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
+	//END OF SPI1 SLAVE2 Communication
 }

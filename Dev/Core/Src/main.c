@@ -41,17 +41,19 @@
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_rx;
 
 /* USER CODE BEGIN PV */
 
 uint8_t SPI_TX_Data[] = "A";
-uint8_t SPI_RX_Data[1];
+uint8_t SPI_RX_Data[1] = {0};
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -59,7 +61,7 @@ static void MX_SPI1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+	OpenMV_ML_Data cameraData[] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -70,7 +72,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	HAL_StatusTypeDef retVal = HAL_OK;
+	//HAL_StatusTypeDef retVal = HAL_OK;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -91,6 +93,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
@@ -103,7 +106,16 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  retVal = HAL_SPI_TransmitReceive_IT(&hspi1, SPI_TX_Data, SPI_RX_Data, 1);
+//	  HAL_GPIO_WritePin(GPIOD, SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
+//	  HAL_SPI_TransmitReceive(&hspi1, SPI_TX_Data, SPI_RX_Data, 1, 1000);
+//	  SPI_TX_Data[0] = SPI_RX_Data[0];
+//	  HAL_Delay(100);
+//	  HAL_SPI_TransmitReceive(&hspi1, SPI_TX_Data, SPI_RX_Data, 1, 1000);
+//	  HAL_GPIO_WritePin(GPIOD, SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
+//	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
+//	  HAL_Delay(1000);
+	  OpenMV_MainFunction(&hspi1, cameraData);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -172,12 +184,13 @@ static void MX_SPI1_Init(void)
   /* USER CODE END SPI1_Init 1 */
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_SLAVE;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -189,6 +202,22 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
 
 }
 
@@ -207,10 +236,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, SPI1_CS_OpenMV1_Pin|SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -227,6 +260,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SPI1_CS_OpenMV1_Pin SPI1_CS_OpenMV2_Pin */
+  GPIO_InitStruct.Pin = SPI1_CS_OpenMV1_Pin|SPI1_CS_OpenMV2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : USB_PowerSwitchOn_Pin */
   GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
