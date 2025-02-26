@@ -25,11 +25,11 @@ def main():
                 led.value(1)
                 spi.send_recv(send_buf, buf_8, timeout=1000)
                 print("Data Sent camera_x(1)", buf_8[0])
-                time.sleep_ms(50)
+                time.sleep_ms(20)
                 send_buf[0] = 30
                 spi.send_recv(send_buf, buf_8, timeout=1000)
                 print("Data Sent camera_x(2)", buf_8[0])
-                time.sleep_ms(100)
+                time.sleep_ms(20)
 
                 send_buf[0] = 35
                 spi.send_recv(send_buf, buf_8, timeout=1000)
@@ -40,6 +40,26 @@ def main():
                 print("Data Sent camera_y(2)", buf_8[0])
                 led.value(0)
                 time.sleep_ms(20)
+
+                send_buf[0] = 35
+                spi.send_recv(send_buf, buf_8, timeout=1000)
+                print("Data Sent camera_h(1)", buf_8[0])
+                time.sleep_ms(20)
+                send_buf[0] = 40
+                spi.send_recv(send_buf, buf_8, timeout=1000)
+                print("Data Sent camera_h(2)", buf_8[0])
+                led.value(0)
+                time.sleep_ms(20)
+
+                send_buf[0] = 35
+                spi.send_recv(send_buf, buf_8, timeout=1000)
+                print("Data Sent camera_w(1)", buf_8[0])
+                time.sleep_ms(20)
+                send_buf[0] = 40
+                spi.send_recv(send_buf, buf_8, timeout=1000)
+                print("Data Sent camera_w(2)", buf_8[0])
+                led.value(0)
+                time.sleep_ms(20)
             except Exception as e:
                 print("Error: ", e)
                 led.value(0)
@@ -48,7 +68,6 @@ def main():
         else:
             # ML Continues #
             led1.value(1)
-            time.sleep_ms(100)
             led1.value(0)
 
 
