@@ -8,7 +8,8 @@
 
 void OpenMV_Init(void)
 {
-	return;
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
 }
 
 void OpenMV_DeInit(void)
@@ -29,15 +30,17 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 	uint8_t data[] = {0};
 	uint8_t RX_SS1[] = "A";
 	uint8_t RX_SS2[] = "Y";
+	uint8_t RX_SS3[] = "W";
+	uint8_t RX_SS4[] = "H";
 
 	if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
 	{
 		camdata.camera_x = (uint16_t)data[0];
-		HAL_Delay(50);
+		HAL_Delay(20);
 		if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
 		{
 			camdata.camera_x |=(uint16_t)(data[0]<<8);
-			HAL_Delay(100);
+			HAL_Delay(20);
 		}
 	}
 	if(HAL_SPI_TransmitReceive(hspi, RX_SS2, data, 1, 1000) == HAL_OK)
@@ -50,7 +53,27 @@ OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraDat
 			HAL_Delay(20);
 		}
 	}
+	if(HAL_SPI_TransmitReceive(hspi, RX_SS4, data, 1, 1000) == HAL_OK)
+	{
+		camdata.camera_h = (uint16_t)data[0];
+		HAL_Delay(20);
+		if(HAL_SPI_TransmitReceive(hspi, RX_SS4, data, 1, 1000) == HAL_OK)
+		{
+			camdata.camera_h |=(uint16_t)(data[0]<<8);
+			HAL_Delay(20);
+		}
+	}
 
+	if(HAL_SPI_TransmitReceive(hspi, RX_SS3, data, 1, 1000) == HAL_OK)
+	{
+		camdata.camera_w = (uint16_t)data[0];
+		HAL_Delay(20);
+		if(HAL_SPI_TransmitReceive(hspi, RX_SS3, data, 1, 1000) == HAL_OK)
+		{
+			camdata.camera_w |=(uint16_t)(data[0]<<8);
+			HAL_Delay(20);
+		}
+	}
 
 	*cameraData = camdata;
 	return retVal;
@@ -78,6 +101,11 @@ void OpenMV_MainFunction(SPI_HandleTypeDef *hspi1, OpenMV_ML_Data *cameraData)
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
 	OpenMV_Read(hspi1, cameraData);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
+
+	//HAL_Delay(10);
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
+	OpenMV_Read(hspi1, cameraData);
+	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_SET);
 
 //	HAL_Delay(50);
 //	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);

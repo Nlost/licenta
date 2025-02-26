@@ -115,6 +115,7 @@ int main(void)
 //	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
 //	  HAL_Delay(1000);
 	  OpenMV_MainFunction(&hspi1, cameraData);
+	  HAL_GPIO_TogglePin(GPIOB, LD2_Pin);
 
     /* USER CODE BEGIN 3 */
   }
