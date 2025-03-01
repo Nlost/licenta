@@ -96,20 +96,17 @@ OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint8_t* data)
 /*OpenMV_MainFunction */
 void OpenMV_MainFunction(SPI_HandleTypeDef *hspi1, OpenMV_ML_Data *cameraData)
 {
-	OpenMV_ReturnType retVal;
 	//START OF SPI1 SLAVE1 Communication
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
 	OpenMV_Read(hspi1, cameraData);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
+	//END OF SPI1 SLAVE1 Communication
 
-	//HAL_Delay(10);
+	//START OF SPI1 SLAVE2 Communication
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
 	OpenMV_Read(hspi1, cameraData);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_SET);
 
-//	HAL_Delay(50);
-//	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
 
-//	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
 	//END OF SPI1 SLAVE2 Communication
 }
