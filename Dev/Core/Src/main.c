@@ -44,7 +44,9 @@ CRYP_HandleTypeDef hcryp;
 __ALIGN_BEGIN static const uint32_t pKeyCRYP[4] __ALIGN_END = {
                             0x00000000,0x00000000,0x00000000,0x00000000};
 __ALIGN_BEGIN static const uint32_t pInitVectCRYP[4] __ALIGN_END = {
-                            0x00000000,0x00000000,0x00000000,0x00000000};
+                            0x00000000,0x00000000,0x00000000,0x00000002};
+__ALIGN_BEGIN static const uint32_t HeaderCRYP[1] __ALIGN_END = {
+                            0x00000000};
 
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_rx;
@@ -52,11 +54,15 @@ DMA_HandleTypeDef hdma_spi1_rx;
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart7;
+DMA_HandleTypeDef hdma_uart4_rx;
+DMA_HandleTypeDef hdma_uart5_rx;
+DMA_HandleTypeDef hdma_uart7_rx;
 
 /* USER CODE BEGIN PV */
 
-uint8_t SPI_TX_Data[] = "A";
-uint8_t SPI_RX_Data[1] = {0};
+OpenMV_SelectedBoard SelectedBoard;
+uint8_t OpenMV_CameraPhoto[IMAGE_SIZE];
+OpenMV_ML_Data cameraData;
 
 /* USER CODE END PV */
 
@@ -75,7 +81,7 @@ static void MX_UART7_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-	OpenMV_ML_Data cameraData[] = {0};
+
 /* USER CODE END 0 */
 
 /**
@@ -126,7 +132,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  OpenMV_MainFunction(&hspi1, cameraData);
+	  OpenMV_SPI_MainFunction(&hspi1);
+	  OpenMV_UART_MainFunction(&huart4, &huart5);
   }
   /* USER CODE END 3 */
 }
@@ -197,7 +204,9 @@ static void MX_CRYP_Init(void)
   hcryp.Init.KeySize = CRYP_KEYSIZE_128B;
   hcryp.Init.pKey = (uint32_t *)pKeyCRYP;
   hcryp.Init.pInitVect = (uint32_t *)pInitVectCRYP;
-  hcryp.Init.Algorithm = CRYP_AES_CBC;
+  hcryp.Init.Algorithm = CRYP_AES_GCM;
+  hcryp.Init.Header = (uint32_t *)HeaderCRYP;
+  hcryp.Init.HeaderSize = 1;
   hcryp.Init.DataWidthUnit = CRYP_DATAWIDTHUNIT_WORD;
   if (HAL_CRYP_Init(&hcryp) != HAL_OK)
   {
@@ -354,8 +363,18 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+  /* DMA1_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA1_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
   /* DMA2_Stream0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);

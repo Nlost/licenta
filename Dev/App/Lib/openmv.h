@@ -9,10 +9,6 @@
 #include "stm32f4xx_hal_spi.h"
 #include "stm32f4xx_hal_gpio.h"
 
-#ifndef OPENMV_H7_H
-#define OPENMV_H7_H
-#endif
-
 #define CAMERA_NOT_INIT (uint8_t)0xFF
 #define CAMERA_INIT (uint8_t) 0xAA
 #define CAMERA_READ_LENGTH 5
@@ -22,23 +18,17 @@
 #define SPI1_CS_OpenMV2_GPIO_Port GPIOD
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
+#define IMAGE_SIZE 115200
+#define CHUNK_SIZE 8192     // Max size per transmission (must be ≤ 65535)
 
 /* Start of OpenMV data types */
 
 typedef enum
 {
-	CAMERA_NOT_OK,
-	CAMERA_OK
-}OpenMV_ReturnType;
-
-typedef enum
-{
-	CAMERA_READ_X,
-	CAMERA_READ_Y,
-	CAMERA_READ_H,
-	CAMERA_READ_W,
-	CAMERA_READ_COMMAND
-}OpenMV_SPI_Command;
+	NoBoard_Selected,
+	OpenMV1_Selected,
+	OpenMV2_Selected
+}OpenMV_SelectedBoard;
 
 typedef struct{
 	int16_t camera_x;
@@ -50,12 +40,16 @@ typedef struct{
 
 /* End of OpenMV data types */
 
+extern UART_HandleTypeDef huart4; //Used for OpenMV1
+extern UART_HandleTypeDef huart5; //Used for OpenMV2
+extern OpenMV_SelectedBoard SelectedBoard;
+extern uint8_t OpenMV_CameraPhoto[IMAGE_SIZE];
+extern OpenMV_ML_Data cameraData;
+
 /* Start of functions prototype declaration */
 
-void OpenMV_Init(void);
-void OpenMV_DeInit(void);
-OpenMV_ReturnType OpenMV_Read(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraData);
-OpenMV_ReturnType OpenMV_Write(SPI_HandleTypeDef *hspi, uint8_t* data);
-void OpenMV_MainFunction(SPI_HandleTypeDef *hspi1, OpenMV_ML_Data *cameraData);
+extern void OpenMV_Init(void);
+extern void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1);
+extern void OpenMV_UART_MainFunction(UART_HandleTypeDef *huart1, UART_HandleTypeDef *huart2);
 
 /* End of functions prototype declaration */

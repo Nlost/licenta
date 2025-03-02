@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "openmv_h7_diag.h"
+#include <openmv.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,7 +41,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern OpenMV_SelectedBoard SelectedBoard;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
