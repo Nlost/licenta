@@ -8,6 +8,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_spi.h"
 #include "stm32f4xx_hal_gpio.h"
+#include "aes-gcm.h"
 
 #define CAMERA_NOT_INIT (uint8_t)0xFF
 #define CAMERA_INIT (uint8_t) 0xAA
@@ -18,8 +19,11 @@
 #define SPI1_CS_OpenMV2_GPIO_Port GPIOD
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
-#define IMAGE_SIZE 115200
-#define CHUNK_SIZE 8192     // Max size per transmission (must be ≤ 65535)
+
+#define IMAGE_SIZE 38400
+
+#define AES128_KeyLength 128
+#define AES128_IVLength 128
 
 /* Start of OpenMV data types */
 
@@ -42,8 +46,12 @@ typedef struct{
 
 extern UART_HandleTypeDef huart4; //Used for OpenMV1
 extern UART_HandleTypeDef huart5; //Used for OpenMV2
+extern UART_HandleTypeDef huart7; //Used for ESP32
 extern OpenMV_SelectedBoard SelectedBoard;
 extern uint8_t OpenMV_CameraPhoto[IMAGE_SIZE];
+extern uint8_t OpenMV_CypherPhoto[IMAGE_SIZE];
+extern const uint8_t AESKey[AES128_KeyLength];
+extern const uint8_t AESIv[AES128_IVLength];
 extern OpenMV_ML_Data cameraData;
 
 /* Start of functions prototype declaration */

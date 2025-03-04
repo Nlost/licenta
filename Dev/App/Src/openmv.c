@@ -7,8 +7,8 @@
 #include <openmv.h>
 
 
-volatile uint8_t tx_complete = 0;
-
+uint8_t rx_complete = 0;
+uint8_t tx_complete = 0;
 
 
 /* Static functions */
@@ -72,32 +72,14 @@ static void OpenMV_SPI_ReadWrite(SPI_HandleTypeDef *hspi)
 	cameraData = camdata;
 }
 
-
-
-
 static void OpenMV_UART_ReceivePhoto(UART_HandleTypeDef *huart)
 {
-	uint32_t bytes_sent = 0;
-	while (bytes_sent < IMAGE_SIZE)
-	{
-		uint16_t bytes_to_send = (IMAGE_SIZE - bytes_sent > CHUNK_SIZE) ? CHUNK_SIZE : (IMAGE_SIZE - bytes_sent);
-
-		tx_complete = 0;
-		HAL_UART_Receive_DMA(huart, &OpenMV_CameraPhoto[bytes_sent], bytes_to_send);
-
-		while(!tx_complete); //Wait for tx_com
-		bytes_sent += bytes_to_send;
-	}
+	rx_complete = 0;
+	HAL_UART_Receive_DMA(huart, OpenMV_CameraPhoto, IMAGE_SIZE);
 }
 
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	tx_complete = 1;  // Image fully received
 
-	// Crypto things :TBD
-
-}
 
 /* Extern API`s */
 void OpenMV_Init(void)
@@ -105,10 +87,10 @@ void OpenMV_Init(void)
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
 	SelectedBoard = NoBoard_Selected;
+	rx_complete = 1;
 	tx_complete = 1;
 }
 
-/*OpenMV_MainFunction */
 void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1)
 {
 	//START OF SPI1 SLAVE1 Communication
@@ -129,18 +111,33 @@ void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1)
 void OpenMV_UART_MainFunction(UART_HandleTypeDef *huart1, UART_HandleTypeDef *huart2)
 {
 	//START OF OpenMV1 UART Communication
-	if(SelectedBoard == OpenMV1_Selected && tx_complete == 1)
+	if(SelectedBoard == OpenMV1_Selected && rx_complete == 1)
 	{
 		OpenMV_UART_ReceivePhoto(huart1);
 	}
 	//END OF OpenMV1 UART Communication
 
 	//START OF OpenMV2 UART Communication
-	else if(SelectedBoard == OpenMV2_Selected && tx_complete == 1)
+	else if(SelectedBoard == OpenMV2_Selected && rx_complete == 1)
 	{
 		OpenMV_UART_ReceivePhoto(huart2);
 	}
 	//END OF OpenMV2 UART Communication
 }
 
+// UART Callbacks
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	rx_complete = 1;  // Image fully received
+
+	aes_gcm_encrypt(OpenMV_CypherPhoto, OpenMV_CameraPhoto, IMAGE_SIZE, AESKey, AES128_KeyLength, AESIv, AES128_IVLength);
+	tx_complete = 0;
+	HAL_UART_Transmit_DMA(&huart7, OpenMV_CypherPhoto, IMAGE_SIZE);
+	while(!tx_complete);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	tx_complete = 1;
+}
 

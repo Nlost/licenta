@@ -1,6 +1,7 @@
 import time, random
 from pyb import SPI
 from machine import LED, Pin
+import cryptolib.aes
 
 def SPI_init():
     # Initialize the SPI bus

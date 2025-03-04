@@ -77,7 +77,8 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define AES128_KeyLength 128
+#define AES128_IVLength 128
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
