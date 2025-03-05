@@ -1,18 +1,20 @@
-/*              openmv_h7_diag.c 			 */
+/*              openmv.c 			 */
 /* This file implements all prototypes 		 */
 /* for communication with OpenMV H7 module 	 */
 /*    Date 	  |   Author  |    Description 	 */
 /* 19.02.2025 | Dan Balan | Creation of file */
 
-#include <openmv.h>
+#include "openmv.h"
 
 
 uint8_t rx_complete = 0;
 uint8_t tx_complete = 0;
-
+OpenMV_SelectedBoard SelectedBoard;
+OpenMV_ML_Data cameraData1;
+OpenMV_ML_Data cameraData2;
 
 /* Static functions */
-static void OpenMV_SPI_ReadWrite(SPI_HandleTypeDef *hspi)
+static void OpenMV_SPI_ReadWrite(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraData)
 {
 	OpenMV_ML_Data camdata = {
 			.camera_x = 0XFFFF,
@@ -69,7 +71,7 @@ static void OpenMV_SPI_ReadWrite(SPI_HandleTypeDef *hspi)
 		}
 	}
 
-	cameraData = camdata;
+	*cameraData = camdata;
 }
 
 static void OpenMV_UART_ReceivePhoto(UART_HandleTypeDef *huart)
@@ -96,14 +98,14 @@ void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1)
 	//START OF SPI1 SLAVE1 Communication
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
 	HAL_Delay(10);
-	OpenMV_SPI_ReadWrite(hspi1);
+	OpenMV_SPI_ReadWrite(hspi1, &cameraData1);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
 	//END OF SPI1 SLAVE1 Communication
 
 	//START OF SPI1 SLAVE2 Communication
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
 	HAL_Delay(10);
-	OpenMV_SPI_ReadWrite(hspi1);
+	OpenMV_SPI_ReadWrite(hspi1, &cameraData2);
 	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_SET);
 	//END OF SPI1 SLAVE2 Communication
 }

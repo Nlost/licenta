@@ -1,4 +1,4 @@
-/*              openmv_h7_diaG.h 			 */
+/*              openmv.h 			 */
 /* This file describes all prototypes 		 */
 /* for communication with OpenMV H7 module 	 */
 /*    Date 	  |   Author  |    Description 	 */
@@ -9,6 +9,9 @@
 #include "stm32f4xx_hal_spi.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "aes-gcm.h"
+
+#ifndef OPENMV_H_INCLUDED
+#define OPENMV_H_INCLUDED
 
 #define CAMERA_NOT_INIT (uint8_t)0xFF
 #define CAMERA_INIT (uint8_t) 0xAA
@@ -47,17 +50,18 @@ typedef struct{
 extern UART_HandleTypeDef huart4; //Used for OpenMV1
 extern UART_HandleTypeDef huart5; //Used for OpenMV2
 extern UART_HandleTypeDef huart7; //Used for ESP32
-extern OpenMV_SelectedBoard SelectedBoard;
 extern uint8_t OpenMV_CameraPhoto[IMAGE_SIZE];
 extern uint8_t OpenMV_CypherPhoto[IMAGE_SIZE];
 extern const uint8_t AESKey[AES128_KeyLength];
 extern const uint8_t AESIv[AES128_IVLength];
-extern OpenMV_ML_Data cameraData;
+
 
 /* Start of functions prototype declaration */
 
-extern void OpenMV_Init(void);
-extern void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1);
-extern void OpenMV_UART_MainFunction(UART_HandleTypeDef *huart1, UART_HandleTypeDef *huart2);
+void OpenMV_Init(void);
+void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1);
+void OpenMV_UART_MainFunction(UART_HandleTypeDef *huart1, UART_HandleTypeDef *huart2);
+
+#endif
 
 /* End of functions prototype declaration */

@@ -52,10 +52,8 @@ DMA_HandleTypeDef hdma_uart7_rx;
 
 /* USER CODE BEGIN PV */
 
-OpenMV_SelectedBoard SelectedBoard;
 uint8_t OpenMV_CameraPhoto[IMAGE_SIZE] = {0};
 uint8_t OpenMV_CypherPhoto[IMAGE_SIZE] = {0};
-OpenMV_ML_Data cameraData;
 
 const uint8_t AESKey[AES128_KeyLength] =
 {

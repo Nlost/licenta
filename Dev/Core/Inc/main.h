@@ -42,6 +42,7 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern OpenMV_SelectedBoard SelectedBoard;
+extern OpenMV_ML_Data cameraData;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
