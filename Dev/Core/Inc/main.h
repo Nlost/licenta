@@ -31,7 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <openmv.h>
+#include "openmv.h"
+#include "MotDrv.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -42,13 +43,16 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern OpenMV_SelectedBoard SelectedBoard;
-extern OpenMV_ML_Data cameraData;
+extern OpenMV_ML_Data cameraData1;
+extern OpenMV_ML_Data cameraData2;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 
 /* USER CODE END EM */
+
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
@@ -58,6 +62,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Motor1_Con1_Pin GPIO_PIN_2
+#define Motor1_Con1_GPIO_Port GPIOE
+#define Motor1_Con2_Pin GPIO_PIN_3
+#define Motor1_Con2_GPIO_Port GPIOE
+#define Motor2_Con1_Pin GPIO_PIN_4
+#define Motor2_Con1_GPIO_Port GPIOE
+#define Motor2_Con2_Pin GPIO_PIN_5
+#define Motor2_Con2_GPIO_Port GPIOE
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
 #define LD3_Pin GPIO_PIN_14
