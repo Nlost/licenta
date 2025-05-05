@@ -9,75 +9,19 @@
 
 uint8_t rx_complete = 0;
 uint8_t tx_complete = 0;
+static uint8_t rx_dma1 = 1;
+static uint8_t rx_dma2 = 2;
+static uint8_t cameraSelected;
 OpenMV_SelectedBoard SelectedBoard;
-OpenMV_ML_Data cameraData1;
-OpenMV_ML_Data cameraData2;
+OpenMV_ML_Data cameraData1 = {0};
+OpenMV_ML_Data cameraData2 = {0};
+static uint8_t rxBuffer[4] = {0};
+static uint8_t rxBuffer1[4] = {0};
 
 /* Static functions */
-static void OpenMV_SPI_ReadWrite(SPI_HandleTypeDef *hspi, OpenMV_ML_Data *cameraData)
-{
-	OpenMV_ML_Data camdata = {
-			.camera_x = 0XFFFF,
-			.camera_y = 0xFFFF,
-			.camera_h = 0XFFFF,
-			.camera_w = 0xFFFF,
-			.command = 0xFF,
-	};
-	uint8_t data[] = {0};
-	uint8_t RX_SS1[] = "A";
-	uint8_t RX_SS2[] = "Y";
-	uint8_t RX_SS3[] = "W";
-	uint8_t RX_SS4[] = "H";
-
-	if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
-	{
-		camdata.camera_x = (uint16_t)data[0];
-		HAL_Delay(20);
-		if(HAL_SPI_TransmitReceive(hspi, RX_SS1, data, 1, 1000) == HAL_OK)
-		{
-			camdata.camera_x |= (uint16_t)(data[0]<<8);
-			HAL_Delay(20);
-		}
-	}
-	if(HAL_SPI_TransmitReceive(hspi, RX_SS2, data, 1, 1000) == HAL_OK)
-	{
-		camdata.camera_y = (uint16_t)data[0];
-		HAL_Delay(20);
-		if(HAL_SPI_TransmitReceive(hspi, RX_SS2, data, 1, 1000) == HAL_OK)
-		{
-			camdata.camera_y |= (uint16_t)(data[0]<<8);
-			HAL_Delay(20);
-		}
-	}
-	if(HAL_SPI_TransmitReceive(hspi, RX_SS4, data, 1, 1000) == HAL_OK)
-	{
-		camdata.camera_h = (uint16_t)data[0];
-		HAL_Delay(20);
-		if(HAL_SPI_TransmitReceive(hspi, RX_SS4, data, 1, 1000) == HAL_OK)
-		{
-			camdata.camera_h |= (uint16_t)(data[0]<<8);
-			HAL_Delay(20);
-		}
-	}
-
-	if(HAL_SPI_TransmitReceive(hspi, RX_SS3, data, 1, 1000) == HAL_OK)
-	{
-		camdata.camera_w = (uint16_t)data[0];
-		HAL_Delay(20);
-		if(HAL_SPI_TransmitReceive(hspi, RX_SS3, data, 1, 1000) == HAL_OK)
-		{
-			camdata.camera_w |= (uint16_t)(data[0]<<8);
-			HAL_Delay(20);
-		}
-	}
-
-	*cameraData = camdata;
-}
-
 static void OpenMV_UART_ReceivePhoto(UART_HandleTypeDef *huart)
 {
-	rx_complete = 0;
-	HAL_UART_Receive_DMA(huart, OpenMV_CameraPhoto, IMAGE_SIZE);
+
 }
 
 
@@ -86,45 +30,57 @@ static void OpenMV_UART_ReceivePhoto(UART_HandleTypeDef *huart)
 /* Extern API`s */
 void OpenMV_Init(void)
 {
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(SPI1_NSS1_GPIO_Port,  SPI1_NSS1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(SPI1_NSS2_GPIO_Port,  SPI1_NSS2_Pin, GPIO_PIN_SET);
 	SelectedBoard = NoBoard_Selected;
 	rx_complete = 1;
 	tx_complete = 1;
+	rx_dma1 = 1;
+	rx_dma2 = 1;
+	cameraSelected = 0;
 }
 
 void OpenMV_SPI_MainFunction(SPI_HandleTypeDef *hspi1)
 {
-	//START OF SPI1 SLAVE1 Communication
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_RESET);
-	HAL_Delay(10);
-	OpenMV_SPI_ReadWrite(hspi1, &cameraData1);
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV1_Pin, GPIO_PIN_SET);
-	//END OF SPI1 SLAVE1 Communication
+    // --- START SPI1 SLAVE1 COMMUNICATION ---
+    rx_dma1 = 0;
+    cameraSelected = 1;
+    HAL_SPI_Receive_DMA(hspi1, rxBuffer, 4); // Start DMA BEFORE asserting NSS
+    HAL_GPIO_WritePin(SPI1_NSS2_GPIO_Port, SPI1_NSS2_Pin, GPIO_PIN_SET); // disable slave 2
+    HAL_GPIO_WritePin(SPI1_NSS1_GPIO_Port, SPI1_NSS1_Pin, GPIO_PIN_RESET); // enable slave 1
+    HAL_Delay(10); // give slave time to send
+    HAL_GPIO_WritePin(SPI1_NSS1_GPIO_Port, SPI1_NSS1_Pin, GPIO_PIN_SET); // end transaction
 
-	//START OF SPI1 SLAVE2 Communication
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_RESET);
-	HAL_Delay(10);
-	OpenMV_SPI_ReadWrite(hspi1, &cameraData2);
-	HAL_GPIO_WritePin(GPIOD,  SPI1_CS_OpenMV2_Pin, GPIO_PIN_SET);
-	//END OF SPI1 SLAVE2 Communication
+    while (!rx_dma1); // wait for DMA complete
+    if (rxBuffer[0] == 85) {
+        cameraData2.camera_x = rxBuffer[1];
+        cameraData2.camera_y = rxBuffer[2];
+        cameraData2.camera_h = rxBuffer[3];
+//        printf("Camera2 data x=%d y=%d h=%d\n", cameraData1.camera_x, cameraData1.camera_y, cameraData1.camera_h);
+    }
+
+    // --- START SPI1 SLAVE2 COMMUNICATION ---
+    rx_dma2 = 0;
+    cameraSelected = 2;
+    HAL_SPI_Receive_DMA(hspi1, rxBuffer1, 4); // Start DMA BEFORE asserting NSS
+    HAL_GPIO_WritePin(SPI1_NSS1_GPIO_Port, SPI1_NSS1_Pin, GPIO_PIN_SET); // disable slave 1
+    HAL_GPIO_WritePin(SPI1_NSS2_GPIO_Port, SPI1_NSS2_Pin, GPIO_PIN_RESET); // enable slave 2
+    HAL_Delay(10); // give slave time to send
+    HAL_GPIO_WritePin(SPI1_NSS2_GPIO_Port, SPI1_NSS2_Pin, GPIO_PIN_SET); // end transaction
+
+    while (!rx_dma2); // wait for DMA complete
+    if (rxBuffer1[0] == 85) {
+        cameraData1.camera_x = rxBuffer1[1];
+        cameraData1.camera_y = rxBuffer1[2];
+        cameraData1.camera_h = rxBuffer1[3];
+//        printf("Camera1 data x=%d y=%d h=%d\n", cameraData2.camera_x, cameraData2.camera_y, cameraData2.camera_h);
+    }
 }
+
 
 void OpenMV_UART_MainFunction(UART_HandleTypeDef *huart1, UART_HandleTypeDef *huart2)
 {
-	//START OF OpenMV1 UART Communication
-	if(SelectedBoard == OpenMV1_Selected && rx_complete == 1)
-	{
-		OpenMV_UART_ReceivePhoto(huart1);
-	}
-	//END OF OpenMV1 UART Communication
-
-	//START OF OpenMV2 UART Communication
-	else if(SelectedBoard == OpenMV2_Selected && rx_complete == 1)
-	{
-		OpenMV_UART_ReceivePhoto(huart2);
-	}
-	//END OF OpenMV2 UART Communication
+	//TBD
 }
 
 // UART Callbacks
@@ -142,4 +98,17 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	tx_complete = 1;
 }
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	if(cameraSelected == 1)
+	{
+		rx_dma1 = 1;
+	}
+	else if(cameraSelected == 2)
+	{
+		rx_dma2 = 1;
+	}
+}
+
 

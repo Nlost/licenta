@@ -62,26 +62,34 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Motor1_Con1_Pin GPIO_PIN_2
-#define Motor1_Con1_GPIO_Port GPIOE
-#define Motor1_Con2_Pin GPIO_PIN_3
-#define Motor1_Con2_GPIO_Port GPIOE
-#define Motor2_Con1_Pin GPIO_PIN_4
-#define Motor2_Con1_GPIO_Port GPIOE
-#define Motor2_Con2_Pin GPIO_PIN_5
-#define Motor2_Con2_GPIO_Port GPIOE
+#define SPI1_NSS2_Pin GPIO_PIN_3
+#define SPI1_NSS2_GPIO_Port GPIOE
+#define SPI1_NSS1_Pin GPIO_PIN_4
+#define SPI1_NSS1_GPIO_Port GPIOE
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
+#define FrontRight_Con1_Pin GPIO_PIN_4
+#define FrontRight_Con1_GPIO_Port GPIOA
+#define FrontRight_Con2_Pin GPIO_PIN_5
+#define FrontRight_Con2_GPIO_Port GPIOA
+#define BackRight_Con1_Pin GPIO_PIN_6
+#define BackRight_Con1_GPIO_Port GPIOA
+#define BackRight_Con2_Pin GPIO_PIN_7
+#define BackRight_Con2_GPIO_Port GPIOA
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
-#define SPI1_CS_OpenMV1_Pin GPIO_PIN_14
-#define SPI1_CS_OpenMV1_GPIO_Port GPIOD
-#define SPI1_CS_OpenMV2_Pin GPIO_PIN_15
-#define SPI1_CS_OpenMV2_GPIO_Port GPIOD
 #define USB_PowerSwitchOn_Pin GPIO_PIN_6
 #define USB_PowerSwitchOn_GPIO_Port GPIOG
 #define USB_OverCurrent_Pin GPIO_PIN_7
 #define USB_OverCurrent_GPIO_Port GPIOG
+#define FrontLeft_Con1_Pin GPIO_PIN_6
+#define FrontLeft_Con1_GPIO_Port GPIOC
+#define FrontLeft_Con2_Pin GPIO_PIN_7
+#define FrontLeft_Con2_GPIO_Port GPIOC
+#define BackLeft_Con1_Pin GPIO_PIN_8
+#define BackLeft_Con1_GPIO_Port GPIOC
+#define BackLeft_Con2_Pin GPIO_PIN_9
+#define BackLeft_Con2_GPIO_Port GPIOC
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
