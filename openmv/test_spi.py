@@ -2,11 +2,19 @@
 
 import sensor
 import time
+import gc
+import machine
+import omv
+import select
+import struct
+import time
+import sensor
+import time
 import image
 import pyb
 from machine import LED
 
-led = LED("LED_RED")
+led = LED("LED_BLUE")
 
 class spi_slave:
     def __init__(self, cs_pin="P3", clk_polarity=1, clk_phase=0, spi_bus=2):  # private
@@ -36,7 +44,7 @@ sensor.set_contrast(3)
 sensor.set_auto_gain(True)      # Enable automatic gain
 sensor.set_auto_exposure(True)  # Enable automatic exposure
 sensor.set_gainceiling(16)
-sensor.set_framesize(sensor.VGA)
+sensor.set_framesize(sensor.HQVGA)
 sensor.set_pixformat(sensor.GRAYSCALE)
 face_cascade = image.HaarCascade("frontalface", stages=25)
 clock = time.clock()
@@ -46,7 +54,7 @@ interface = spi_slave(cs_pin="P3", clk_polarity=1, clk_phase=0, spi_bus=2)
 
 # Shared state
 ready_to_send = False
-send_buffer = bytearray(7)
+send_buffer = bytearray(4)
 
 # Interrupt sets the flag
 def nss_callback(line):
@@ -70,27 +78,15 @@ while True:
     num_faces = min(len(objects), 255)
     if(num_faces == 1):
         led.toggle()
-        x = objects[0][0]
-        y = objects[0][1]
-        h = objects[0][2]
-        print(x, y, h)
         send_buffer[0] = 85
-        send_buffer[1] = x & 0xFF
-        send_buffer[2] = (x >> 8) & 0xFF
-        send_buffer[3] = y & 0xFF
-        send_buffer[4] = (y >> 8) & 0xFF
-        send_buffer[5] = h & 0xFF
-        send_buffer[6] = (h >> 8) & 0xFF
-        for i in range(7):
-            print(send_buffer[i])
+        send_buffer[1] = objects[0][0]
+        send_buffer[2] = objects[0][1]
+        send_buffer[3] = 0x10
     else:
         send_buffer[0] = 86  # Header byte
         send_buffer[1] = 0xAA
         send_buffer[2] = 0xFF  # Just for demo: send FPS as third byte
         send_buffer[3] = 0x10
-        send_buffer[4] = 0xAA
-        send_buffer[5] = 0xFF
-        send_buffer[6] = 0x10
     # SPI send logic (non-blocking during interrupt)
     if ready_to_send:
         try:

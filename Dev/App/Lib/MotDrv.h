@@ -18,10 +18,14 @@
 #define Left_GPIO_Port GPIOC
 
 
-#define IMAGE_WIDTH 240
-#define CENTER_TOLERANCE 20
-#define NEAR_THRESHOLD 80
-#define FAR_THRESHOLD 30
+#define FRAME_WIDTH 640
+#define CENTER_X (FRAME_WIDTH/2)
+#define X_TOLERANCE 30
+#define TARGET_H 35
+#define H_TOLERANCE 10
+#define FRAME_HEIGHT 480
+#define CENTER_Y (FRAME_HEIGHT/2)
+#define Y_TOLERANCE 50
 
 typedef enum
 {

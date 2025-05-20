@@ -58,6 +58,7 @@ uint8_t rx_dma = 1;
 uint8_t testRxBuffer[4] = {0};
 uint8_t OpenMV_CameraPhoto[IMAGE_SIZE] = {0};
 uint8_t OpenMV_CypherPhoto[IMAGE_SIZE] = {0};
+uint64_t codeCounter = 0;
 
 //const uint8_t AESKey[AES128_KeyLength] =
 //{
@@ -146,6 +147,10 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
 	  OpenMV_SPI_MainFunction(&hspi4);
 	  MotDrv_TakeDecision(cameraData1, cameraData2);
+//	  if(codeCounter == 10000)
+//	  {
+//		  NVIC_SystemReset();
+//	  }
   }
   /* USER CODE END 3 */
 }
@@ -218,7 +223,7 @@ static void MX_SPI4_Init(void)
   hspi4.Init.CLKPolarity = SPI_POLARITY_HIGH;
   hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi4.Init.NSS = SPI_NSS_SOFT;
-  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

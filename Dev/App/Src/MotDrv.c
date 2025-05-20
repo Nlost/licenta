@@ -38,12 +38,12 @@ static void setDirection(Motor_Select motor, Motor_Direction direction)
 	switch(motor)
 		{
 		case FrontLeft:
-			if(direction == Front)
+			if(direction == Back)
 			{
 				HAL_GPIO_WritePin(Left_GPIO_Port, FrontLeft_Con1_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Left_GPIO_Port, FrontLeft_Con2_Pin, GPIO_PIN_RESET);
 			}
-			else if(direction == Back)
+			else if(direction == Front)
 			{
 				HAL_GPIO_WritePin(Left_GPIO_Port, FrontLeft_Con1_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Left_GPIO_Port, FrontLeft_Con2_Pin, GPIO_PIN_SET);
@@ -55,12 +55,12 @@ static void setDirection(Motor_Select motor, Motor_Direction direction)
 			}
 			break;
 		case FrontRight:
-			if(direction == Front)
+			if(direction == Back)
 			{
 				HAL_GPIO_WritePin(Right_GPIO_Port, FrontRight_Con1_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Right_GPIO_Port, FrontRight_Con2_Pin, GPIO_PIN_RESET);
 			}
-			else if(direction == Back)
+			else if(direction == Front)
 			{
 				HAL_GPIO_WritePin(Right_GPIO_Port, FrontRight_Con1_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Right_GPIO_Port, FrontRight_Con2_Pin, GPIO_PIN_SET);
@@ -72,12 +72,12 @@ static void setDirection(Motor_Select motor, Motor_Direction direction)
 			}
 			break;
 		case BackLeft:
-			if(direction == Front)
+			if(direction == Back)
 			{
 				HAL_GPIO_WritePin(Left_GPIO_Port, BackLeft_Con1_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Left_GPIO_Port, BackLeft_Con2_Pin, GPIO_PIN_RESET);
 			}
-			else if(direction == Back)
+			else if(direction == Front)
 			{
 				HAL_GPIO_WritePin(Left_GPIO_Port, BackLeft_Con1_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Left_GPIO_Port, BackLeft_Con2_Pin, GPIO_PIN_SET);
@@ -89,12 +89,12 @@ static void setDirection(Motor_Select motor, Motor_Direction direction)
 			}
 			break;
 		case BackRight:
-			if(direction == Front)
+			if(direction == Back)
 			{
 				HAL_GPIO_WritePin(Right_GPIO_Port, BackRight_Con1_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Right_GPIO_Port, BackRight_Con2_Pin, GPIO_PIN_RESET);
 			}
-			else if(direction == Back)
+			else if(direction == Front)
 			{
 				HAL_GPIO_WritePin(Right_GPIO_Port, BackRight_Con1_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Right_GPIO_Port, BackRight_Con2_Pin, GPIO_PIN_SET);
@@ -139,8 +139,8 @@ static void MotDrv_GoBack(uint32_t speed)
 
 static void MotDrv_TurnRight(uint32_t speed)
 {
-	setSpeed(FrontLeft, speed);
-	setSpeed(FrontRight, 0);
+	setSpeed(FrontLeft, 0);
+	setSpeed(FrontRight, speed);
 	setSpeed(BackLeft, speed);
 	setSpeed(BackRight, 0);
 
@@ -152,14 +152,14 @@ static void MotDrv_TurnRight(uint32_t speed)
 
 static void MotDrv_TurnLeft(uint32_t speed)
 {
-	setSpeed(FrontLeft, 0);
-	setSpeed(FrontRight, speed);
+	setSpeed(FrontLeft, speed);
+	setSpeed(FrontRight, 0);
 	setSpeed(BackLeft, 0);
 	setSpeed(BackRight, speed);
 
-	setDirection(FrontLeft, Back);
+	setDirection(FrontLeft, Front);
 	setDirection(FrontRight, Front);
-	setDirection(BackLeft, Back);
+	setDirection(BackLeft, Front);
 	setDirection(BackRight, Front);
 }
 
@@ -178,39 +178,76 @@ static void MotDrv_Stay()
 
 void MotDrv_TakeDecision(OpenMV_ML_Data cameraData1, OpenMV_ML_Data cameraData2)
 {
-    printf("Camera1 data x=%d y=%d h=%d\n", cameraData1.camera_x, cameraData1.camera_y, cameraData1.camera_h);
-    printf("Camera2 data x=%d y=%d h=%d\n", cameraData2.camera_x, cameraData2.camera_y, cameraData2.camera_h);
+//    printf("Camera1 data x=%d y=%d h=%d\n", cameraData1.camera_x, cameraData1.camera_y, cameraData1.camera_h);
+//    printf("Camera2 data x=%d y=%d h=%d\n", cameraData2.camera_x, cameraData2.camera_y, cameraData2.camera_h);
 
-    if(cameraData1.camera_x > 120 && cameraData2.camera_x > 80)
+    if(cameraData1.camera_x != 0 && cameraData2.camera_x != 0)
+    /*
     {
-    	printf("Turn Right\n");
-    	MotDrv_TurnRight(32000);
-    }
-    else if(cameraData2.camera_x < 120 && cameraData1.camera_x < 80)
-    {
-    	printf("Turn Left\n");
-    	MotDrv_TurnLeft(32000);
-    }
-    else
-    {
-    	MotDrv_Stay();
-    }
+		if(cameraData1.camera_x > 120 && cameraData2.camera_x > 80)
+		{
+			printf("Turn Right\n");
+			MotDrv_TurnRight(50000);
+		}
+		else if(cameraData2.camera_x < 120 && cameraData1.camera_x < 80)
+		{
+			printf("Turn Left\n");
+			MotDrv_TurnLeft(50000);
+		}
+		else
+		{
+			MotDrv_Stay();
+		}
 
-    if(cameraData1.camera_y > 80 && cameraData2.camera_y > 80)
-    {
-    	printf("Go front\n");
-    	MotDrv_GoFront(50000);
+		if(cameraData1.camera_y > 80 && cameraData2.camera_y > 80)
+		{
+			printf("Go front\n");
+			MotDrv_GoFront(20000);
+		}
+		else if(cameraData1.camera_y < 40 && cameraData2.camera_y < 40)
+		{
+			printf("Go back\n");
+			MotDrv_GoBack(20000);
+		}
+		else
+		{
+	//    	MotDrv_Stay();
+		}
+	//	HAL_Delay(100);
     }
-    else if(cameraData1.camera_y < 40 && cameraData2.camera_y < 40)
+    /*
+	MotDrv_TurnLeft(50000);
+     */
     {
-    	printf("Go back\n");
-    	MotDrv_GoBack(64000);
+    	int avgX = (cameraData1.camera_x + cameraData2.camera_x) / 2;
+    	int avgY = (cameraData1.camera_y + cameraData2.camera_y) / 2;
+
+    	int offsetX = avgX - CENTER_X;
+    	int offsetY = avgY - CENTER_Y;
+
+//    	printf("%d %d\n", offsetX, offsetH);
+    	if(offsetY < -Y_TOLERANCE)
+    	{
+    		printf("Go Front\n");
+    		MotDrv_GoBack(25000);
+    	}else if(offsetY > Y_TOLERANCE)
+    	{
+    		printf("Go Back\n");
+    		MotDrv_GoFront(25000);
+    	}else
+    	{
+//    		if(offsetX < -X_TOLERANCE)
+//    		{
+//    			MotDrv_GoLeft(50000);
+//    		}else if(offsetX > X_TOLERANCE)
+//    		{
+//    			MotDrv_TurnRight(50000);
+//    		}else
+//    		{
+    			MotDrv_Stay();
+//    		}
+    	}
     }
-    else
-    {
-//    	MotDrv_Stay();
-    }
-//	HAL_Delay(100);
 }
 
 

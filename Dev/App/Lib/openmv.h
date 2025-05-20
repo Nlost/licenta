@@ -39,9 +39,9 @@ typedef enum
 }OpenMV_SelectedBoard;
 
 typedef struct{
-	uint8_t camera_x;
-	uint8_t camera_y;
-	uint8_t camera_h;
+	uint16_t camera_x;
+	uint16_t camera_y;
+	uint16_t camera_h;
 }OpenMV_ML_Data;
 
 /* End of OpenMV data types */
