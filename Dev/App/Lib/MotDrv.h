@@ -20,7 +20,7 @@
 
 #define FRAME_WIDTH 640
 #define CENTER_X (FRAME_WIDTH/2)
-#define X_TOLERANCE 30
+#define X_TOLERANCE 40
 #define TARGET_H 35
 #define H_TOLERANCE 10
 #define FRAME_HEIGHT 480

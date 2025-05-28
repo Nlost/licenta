@@ -147,10 +147,6 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
 	  OpenMV_SPI_MainFunction(&hspi4);
 	  MotDrv_TakeDecision(cameraData1, cameraData2);
-//	  if(codeCounter == 10000)
-//	  {
-//		  NVIC_SystemReset();
-//	  }
   }
   /* USER CODE END 3 */
 }
