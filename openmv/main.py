@@ -1,5 +1,3 @@
-# Untitled - By: Dan Balan - Sat May 17 2025
-
 import sensor
 import time
 import image
@@ -63,30 +61,26 @@ while True:
     # Detect faces
     objects = img.find_features(face_cascade, threshold=0.75, scale_factor=1.25)
     for r in objects:
-        # send_buffer = list(r)
         img.draw_rectangle(r)
 
     # Example data packing based on face count
     num_faces = min(len(objects), 255)
-    if(num_faces == 1):
+    if(num_faces == 1): #Data frame
         led.toggle()
         x = objects[0][0]
         y = objects[0][1]
         h = objects[0][2]
-        print(x, y, h)
-        send_buffer[0] = 85
+        send_buffer[0] = 85 # Header byte
         send_buffer[1] = x & 0xFF
         send_buffer[2] = (x >> 8) & 0xFF
         send_buffer[3] = y & 0xFF
         send_buffer[4] = (y >> 8) & 0xFF
         send_buffer[5] = h & 0xFF
         send_buffer[6] = (h >> 8) & 0xFF
-        for i in range(7):
-            print(send_buffer[i])
-    else:
+    else: #Error frame
         send_buffer[0] = 86  # Header byte
         send_buffer[1] = 0xAA
-        send_buffer[2] = 0xFF  # Just for demo: send FPS as third byte
+        send_buffer[2] = 0xFF  
         send_buffer[3] = 0x10
         send_buffer[4] = 0xAA
         send_buffer[5] = 0xFF
@@ -95,7 +89,6 @@ while True:
     if ready_to_send:
         try:
             interface.put_bytes(send_buffer, 1000)
-            # print("Sent:", list(send_buffer))
         except Exception as e:
             continue
         ready_to_send = False

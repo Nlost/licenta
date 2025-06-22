@@ -1,4 +1,5 @@
-# Untitled - By: Dan Balan - Sat May 17 2025
+#Test file for SPI slave interface on OpenMV
+#Not used in production code, but useful for testing the SPI slave functionality
 
 import sensor
 import time

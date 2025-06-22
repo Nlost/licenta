@@ -54,27 +54,6 @@ DMA_HandleTypeDef hdma_uart5_rx;
 DMA_HandleTypeDef hdma_uart7_tx;
 
 /* USER CODE BEGIN PV */
-uint8_t rx_dma = 1;
-uint8_t testRxBuffer[4] = {0};
-uint8_t OpenMV_CameraPhoto[IMAGE_SIZE] = {0};
-uint8_t OpenMV_CypherPhoto[IMAGE_SIZE] = {0};
-uint64_t codeCounter = 0;
-
-//const uint8_t AESKey[AES128_KeyLength] =
-//{
-//		0xAD, 0x2F, 0xA3, 0xDF,
-//		0xF9, 0xBA, 0xEF, 0xDF,
-//		0x73, 0xC4, 0xE8, 0x96,
-//		0x85, 0xE4, 0x29, 0xC7
-//};
-//
-//const uint8_t AESIv[AES128_IVLength] =
-//{
-//		0x70, 0xC3, 0x77, 0x57,
-//		0x3B, 0x08, 0x5E, 0xCC,
-//		0x67, 0xE0, 0xFA, 0x49,
-//		0x0C, 0x42, 0xA7, 0xED
-//};
 
 /* USER CODE END PV */
 
@@ -147,6 +126,8 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
 	  OpenMV_SPI_MainFunction(&hspi4);
 	  MotDrv_TakeDecision(cameraData1, cameraData2);
+	  printf("Primit frame de eroare\n");
+	  printf("Comanda: GO_FRONT\n");
   }
   /* USER CODE END 3 */
 }
