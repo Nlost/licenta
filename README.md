@@ -1,5 +1,8 @@
 Lucrare de licență cu tema "Robot mobil și autonom pentru urmarirea unei persoane"
 ====
+**Candidat: Dan BALAN**
+
+**Coordonator științific: Ș.l.dr.ing. Ana Maria DAN**
 
 
 Adresa de Github
