@@ -1,4 +1,4 @@
-Lucrare de licență cu tema "Robot mobil și autonom pentru urmarirea unei persoane"
+Lucrare de licență cu tema "Robot mobil autonom pentru urmarirea unei persoane"
 ====
 **Candidat: Dan BALAN**
 
