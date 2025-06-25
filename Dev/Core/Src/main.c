@@ -126,8 +126,6 @@ int main(void)
 	  HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
 	  OpenMV_SPI_MainFunction(&hspi4);
 	  MotDrv_TakeDecision(cameraData1, cameraData2);
-	  printf("Primit frame de eroare\n");
-	  printf("Comanda: GO_FRONT\n");
   }
   /* USER CODE END 3 */
 }
